@@ -16,7 +16,8 @@ mongoose
         useCreateIndex: true,
         useFindAndModify: false
     })
-    .then(() => console.log('DB Connection Successful'));
+    .then(() => console.log('DB Connection Successful'))
+    .catch((err) => console.log(err));
 
 const app = require('./app');
 
