@@ -1,9 +1,9 @@
-import React, { useState, ReactNode, createContext } from 'react';
+import React, { ReactNode, createContext, useReducer } from 'react';
+import { authReducer, initialState, AuthState } from '../reducers/authReducer';
 
 interface AuthContextType {
-  isLoggedIn: boolean;
-  login: () => void;
-  logout: () => void;
+  authState: AuthState;
+  dispatch: React.Dispatch<any>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -13,13 +13,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-
-  const login = () => setIsLoggedIn(true);
-  const logout = () => setIsLoggedIn(false);
+  const [authState, dispatch] = useReducer(authReducer, initialState);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ authState, dispatch }}>
       {children}
     </AuthContext.Provider>
   );

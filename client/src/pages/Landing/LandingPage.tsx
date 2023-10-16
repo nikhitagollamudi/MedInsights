@@ -1,4 +1,3 @@
-import { Header } from "../../components/Header";
 import { Banner } from "../../components/Banner";
 import { ProductGoal } from "../../components/ProductGoal";
 import { Services } from "../../components/Services";
@@ -9,7 +8,6 @@ import { Footer } from "../../components/Footer";
 function LandingPage () {
     return (
         <div>
-            <Header />
             <Banner />
             <ProductGoal />
             <Services />

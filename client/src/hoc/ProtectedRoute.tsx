@@ -9,11 +9,12 @@ const withProtectedRoute = (Component: React.ComponentType<any>) => {
 
       if (!auth) {
         // handle the error, probably throw an error or navigate to a different page
-        throw new Error("You must use the HOC within an AuthProvider");
-        }
-  
-      if (!auth.isLoggedIn) {
         navigate('/');
+        return null;
+      }
+  
+      if (!auth.authState.isLoggedIn) {
+        navigate('/login');
         return null;
       }
   
