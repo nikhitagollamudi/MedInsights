@@ -1,8 +1,19 @@
 FROM node:18.13
-WORKDIR /app
-COPY package.json ./
-RUN npm install
-COPY . .
-RUN node build.mjs
 
-CMD ["node", "dist/index.js"]
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json to the container
+COPY package*.json ./
+
+# Install npm packages
+RUN npm install
+
+
+# Copy the rest of your application code
+COPY . .
+
+EXPOSE 3000
+
+# Specify the command to run your application
+CMD ["npm", "run", "start"]

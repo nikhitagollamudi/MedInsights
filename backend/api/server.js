@@ -19,6 +19,13 @@ mongoose
     .then(() => console.log('DB Connection Successful'))
     .catch((err) => console.log(err));
 
+let DATABASE_URL = "";
+if (process.env.RENDER_GIT_BRANCH === "main") {
+    DATABASE_URL = process.env.PROD_DATABASE_URL;
+} else {
+    DATABASE_URL = process.env.DEV_DATABASE_URL;
+}
+
 const app = require('./app');
 
 const port = process.env.PORT || 3000;

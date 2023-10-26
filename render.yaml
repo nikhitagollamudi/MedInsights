@@ -7,7 +7,7 @@ services:
     region: ohio
     plan: free
     branch: main
-    rootDir: backend/auth-api # Will need to be updated when we merge apis
+    rootDir: backend/api
     numInstances: 1
     healthCheckPath: /
     pullRequestPreviewsEnabled: true

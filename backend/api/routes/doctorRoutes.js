@@ -1,5 +1,5 @@
-import express from 'express';
-import * as doctorController from '../controllers/doctorController';
+const express = require('express');
+const doctorController = require('../controllers/doctorController');
 
 export const doctorRouter = express.Router();
 
