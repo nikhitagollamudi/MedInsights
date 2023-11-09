@@ -39,7 +39,8 @@ export const authReducer = (state: AuthState, action: AuthAction) => {
                 ...state, 
                 qrCode: payload.qrCode,
                 user: payload.user,
-                isFirstLogin: true
+                isFirstLogin: true,
+                isLoggedIn: true
             }
         case 'LOGIN':
             return { 
@@ -51,6 +52,6 @@ export const authReducer = (state: AuthState, action: AuthAction) => {
         case 'LOGOUT':
             return initialState;
         default:
-            return initialState;
+            return state;
     }
 }

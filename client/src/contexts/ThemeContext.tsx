@@ -1,7 +1,9 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { Theme } from '@mui/material/styles';
-import defaultTheme from '../themes/default';
-import theme1 from '../themes/theme1';
+import theme1 from '../themes/default';
+import theme2 from '../themes/theme1';
+import AuthContext from './AuthContext';
+import { Helper } from '../services/helper';
 
 interface ThemeProviderProps {
     children: ReactNode;
@@ -15,11 +17,19 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState(defaultTheme);
+  const auth = useContext(AuthContext);
+  const [theme, setTheme] = useState(theme1);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === defaultTheme ? theme1 : defaultTheme));
+    setTheme(prevTheme => (prevTheme === theme1 ? theme2 : theme1));
   };
+
+  useEffect(() => {
+    if (auth?.authState?.user?.theme) {
+      const newTheme = Helper.getTheme(auth?.authState?.user?.theme)
+      setTheme(newTheme);
+    }
+  }, [auth])
 
   return (
     <ThemeContext.Provider value={{ currentTheme: theme, toggleTheme }}>

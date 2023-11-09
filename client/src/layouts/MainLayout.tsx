@@ -1,16 +1,27 @@
-import React, { useContext } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Header } from '../components/Header';
 import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useThemeContext } from '../contexts/ThemeContext';
+import { AuthProvider } from '../contexts/AuthContext';
+import { useThemeContext, ThemeProvider as TProvider } from '../contexts/ThemeContext';
 
 const MainLayout: React.FC = () => {
-    const { currentTheme, toggleTheme } = useThemeContext();
-    const location = useLocation();
+    return (
+        <AuthProvider>
+            <TProvider>
+                <CssBaseline />
+                <ChildLayout />
+            </TProvider>
+        </AuthProvider>
+    );
+}
 
+const ChildLayout = () => {
+    const location = useLocation();
+    const { currentTheme } = useThemeContext();
+    
     return (
         <>
-            <CssBaseline />
             {
                 location.pathname.includes('app') ?
                 <ThemeProvider theme={currentTheme}>

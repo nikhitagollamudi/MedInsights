@@ -1,12 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LoaderFunction, ActionFunction, ShouldRevalidateFunction, redirect } from "react-router-dom";
+import { ActionFunction, ShouldRevalidateFunction } from "react-router-dom";
 import LandingPage from "../pages/Landing/LandingPage";
 import Login from "../pages/Auth/Login";
-import withProtectedRoute from "../hoc/ProtectedRoute";
 import DashboardLayout from "../pages/DashboardLayout/DashboardLayout";
 import MainLayout from "../layouts/MainLayout";
-import AuthContext from "../contexts/AuthContext";
-import { useContext } from "react";
+import AuthLayout from "../pages/Auth/AuthLayout";
+import Register from "../pages/Auth/Register";
+import TwoFactorAuth from "../components/common/TwoFactorAuth";
+import DashboardHome from "../pages/DashboardHome/DashboardHome";
 
 
 interface createBrowserRouter {
@@ -30,11 +31,6 @@ interface RouteObject {
     errorElement?: React.ReactNode | null;
     ErrorBoundary?: React.ComponentType | null;
     shouldRevalidate?: ShouldRevalidateFunction;
-} 
-
-const getProtectedRoute = (component:React.ComponentType) => {
-    const ProtectedRoute = withProtectedRoute(component);
-    return <ProtectedRoute />;
 }
 
 const router = createBrowserRouter([
@@ -47,18 +43,55 @@ const router = createBrowserRouter([
                 element: <LandingPage />
             },
             {
-                path: '/login',
-                element: <Login />
-            },
-            {
-                path: '/register',
-                element: <LandingPage />
+                path: '/auth',
+                element: <AuthLayout />,
+                children: [
+                    {
+                        path: 'login',
+                        element: <Login />
+                    },
+                    {
+                        path: 'register',
+                        element: <Register />
+                    },
+                    {
+                        path: '2fa',
+                        element: <TwoFactorAuth />
+                    }
+                ]
             },
             {
                 path: '/app',
-                element: getProtectedRoute(DashboardLayout),
+                element: <DashboardLayout />,
                 children: [
-
+                    {
+                        index: true,
+                        element: <DashboardHome />
+                    },
+                    {
+                        path: 'appointments',
+                        element: ''
+                    },
+                    {
+                        path: 'doctors',
+                        element: ''
+                    },
+                    {
+                        path: 'insurances',
+                        element: ''
+                    },
+                    {
+                        path: 'patients',
+                        element: ''
+                    },
+                    {
+                        path: 'plans',
+                        element: ''
+                    },
+                    {
+                        path: 'settings',
+                        element: '',
+                    }
                 ]
             }
         ]

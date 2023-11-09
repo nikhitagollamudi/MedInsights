@@ -1,19 +1,24 @@
-import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { useThemeContext } from '../../contexts/ThemeContext';
-import { Button } from '@mui/material';
+import React, { useContext } from 'react';
+import Sidebar from '../../components/common/Sidebar';
+import { Navigate, Outlet } from 'react-router-dom';
+import { Box } from '@mui/material';
+import AuthContext from '../../contexts/AuthContext';
 
 const DashboardLayout: React.FC = () => {
-    const { currentTheme, toggleTheme } = useThemeContext();
+    const auth = useContext(AuthContext);
+    const drawerWidth = 240;
 
+    if (!auth?.authState?.isLoggedIn) {
+        return <Navigate to="/auth/login" replace />
+    }
 
     return (
-        <ThemeProvider theme={currentTheme}>
-            <Button variant="outlined" onClick={toggleTheme}>
-                Toggle Theme
-            </Button>
-            <div>Your dashboard content</div>
-        </ThemeProvider>
+        <>
+            <Sidebar />
+            <Box sx={{ width: `calc(100% - ${drawerWidth}px)`, marginLeft: `${drawerWidth}px`, padding: 8, height: `calc(100vh - 64px)` }}>
+                <Outlet />
+            </Box>
+        </>
     );
 }
 

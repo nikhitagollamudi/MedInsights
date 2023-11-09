@@ -1,25 +1,45 @@
-import React, { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
+import { Navigate, useNavigate, Outlet } from 'react-router-dom';
 import AuthContext from '../contexts/AuthContext';
 
-const withProtectedRoute = (Component: React.ComponentType<any>) => {
-    return (props: any) => {
-      const auth = useContext(AuthContext);
-      const navigate = useNavigate();
+// const withProtectedRoute = (Component: React.ComponentType<any>) => {
+//     return (props: any) => {
+//       const auth = useContext(AuthContext);
+//       const navigate = useNavigate();
 
-      if (!auth) {
-        // handle the error, probably throw an error or navigate to a different page
-        navigate('/');
-        return null;
-      }
+//       // useEffect(() => {
+//       //   console.log(auth, 'auth inside hoc')
+//       //   if (!auth) {
+//       //     // handle the error, probably throw an error or navigate to a different page
+//       //     navigate('/');
+//       //     // return null;
+//       //   }
+    
+//       //   if (!auth?.authState.isLoggedIn) {
+//       //     navigate('/auth/login');
+//       //     // return null;
+//       //   }
+//       // }, [auth])
+//       console.log(auth, 'auth in hoc')
+//       if (auth?.authState?.isLoggedIn) {
+//         return <Component {...props} />;
+//       } else {
+//         return <Navigate to="/auth/login" />
+//       }
   
-      if (!auth.authState.isLoggedIn) {
-        navigate('/login');
-        return null;
-      }
-  
-      return <Component {...props} />;
-    };
-};
+//       // return <Component {...props} />;
+//     };
+// };
 
-export default withProtectedRoute;
+// export default withProtectedRoute;
+
+const ProtectedRoute = (props:any) => {
+  const auth = useContext(AuthContext);
+  if (!auth?.authState?.isLoggedIn) {
+    return <Navigate to="/auth/login" replace />;
+  }
+
+  return <Outlet />;
+}
+
+export default ProtectedRoute;

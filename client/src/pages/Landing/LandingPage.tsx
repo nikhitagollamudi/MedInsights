@@ -1,8 +1,8 @@
-import { Banner } from "../../components/Banner";
-import { ProductGoal } from "../../components/ProductGoal";
-import { Services } from "../../components/Services";
-import { Testimonials } from "../../components/Testimonials";
-import { ContactUs } from "../../components/ContactUs";
+import { Banner } from "../../components/landing/Banner";
+import { ProductGoal } from "../../components/landing/ProductGoal";
+import { Services } from "../../components/landing/Services";
+import { Testimonials } from "../../components/landing/Testimonials";
+import { ContactUs } from "../../components/landing/ContactUs";
 import { Footer } from "../../components/Footer";
 
 function LandingPage () {

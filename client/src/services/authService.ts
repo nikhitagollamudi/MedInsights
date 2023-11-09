@@ -1,15 +1,15 @@
 import axios from 'axios';
+import { Helper } from './helper';
 
 // const API_URL = '';
 
 const register = (payload:any) => {
     return new Promise<any>((resolve, reject) => {
+        const userData = Helper.getUserByEmail(payload.email);
         const data = {
-            token: 'xyz',
-            user: {
-                name: payload.name,
-                email: payload.email,
-                role: payload.role
+            qrCode: require('../assets/qrcode.png'),
+            data: {
+                user: userData
             }
         }
         setTimeout(() => {
@@ -20,12 +20,10 @@ const register = (payload:any) => {
 
 const login = (payload:any) => {
     return new Promise<any>((resolve, reject) => {
+        const userData = Helper.getUserByEmail(payload.email);
         const data = {
             token: 'xyz',
-            user: {
-                email: payload.email,
-                name: payload.name
-            }
+            user: userData
         }
         setTimeout(() => {
             resolve(data);
