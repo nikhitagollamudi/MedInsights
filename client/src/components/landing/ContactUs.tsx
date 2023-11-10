@@ -8,7 +8,7 @@ export function ContactUs() {
         <TextField fullWidth label="Name" sx={{ marginBottom: 2 }} />
         <TextField fullWidth label="Email" sx={{ marginBottom: 2 }} />
         <TextField fullWidth label="Message" multiline rows={4} sx={{ marginBottom: 2 }} />
-        <Button variant="contained" color="primary" type="submit">Submit</Button>
+        <Button variant="contained" color="primary" type="submit" sx={{backgroundColor:'#9370DB'}}>Submit</Button>
       </form>
     </Container>
   );
