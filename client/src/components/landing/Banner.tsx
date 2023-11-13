@@ -1,5 +1,5 @@
 import { Container, Typography } from '@mui/material';
-import omniPlatformImage from '../images/photo.jpeg';
+import omniPlatformImage from './images/photo.jpeg';
 export function Banner() {
   return (
     <Container maxWidth="lg" sx={{ textAlign: 'center', padding: '40px 0',backgroundImage:`url(${omniPlatformImage})`,backgroundSize:'cover',backgroundRepeat:'no-repeat',backgroundPosition:'center',color:'white',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',minHeight:'100vh'}}>

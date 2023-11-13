@@ -1,7 +1,7 @@
 import { Container, Grid, Card, CardContent, Typography } from '@mui/material';
-import appointmentBookingImage from '../images/image1.jpeg'; 
-import insurancePurchaseImage from '../images/instant-purchase.jpg'; 
-import onlineChatImage from '../images/chat.jpeg';
+import appointmentBookingImage from './images/image1.jpeg'; 
+import insurancePurchaseImage from './images/instant-purchase.jpg'; 
+import onlineChatImage from './images/chat.jpeg';
 export function Services() {
   const serviceList = [
     { title: 'Appointment Booking', description: 'Book your next appointment with ease.',backgroundImage: appointmentBookingImage},
