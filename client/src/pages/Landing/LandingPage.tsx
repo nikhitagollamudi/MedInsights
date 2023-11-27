@@ -4,10 +4,12 @@ import { Services } from "../../components/landing/Services";
 import { Testimonials } from "../../components/landing/Testimonials";
 import { ContactUs } from "../../components/landing/ContactUs";
 import { Footer } from "../../components/Footer";
+import {Header} from "../../components/Header"
 
 function LandingPage () {
     return (
         <div>
+            <Header/>
             <Banner />
             <ProductGoal />
             <Services />
