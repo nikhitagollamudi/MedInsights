@@ -9,9 +9,10 @@ COPY package*.json ./
 # Install npm packages
 RUN npm install
 
-
 # Copy the rest of your application code
 COPY . .
+
+RUN make -C prisma generate
 
 EXPOSE 3000
 

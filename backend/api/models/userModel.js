@@ -4,6 +4,11 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "A user must have a name"],
+    trim: true,
+  },
   email: {
     type: String,
     required: [true, "A user must have an email"],
@@ -12,10 +17,26 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: [validator.isEmail, "please provide a valid Email"],
   },
-  access: {
+  photo: {
     type: String,
-    enum: ["user", "admin"],
-    default: "user",
+    trim: true,
+    default: "default.jpg",
+  },
+  role: {
+    type: String,
+    enum: ["admin", "doctor", "patient", "insurer"],
+    default: "patient",
+  },
+  theme: {
+    type: String,
+    enum: ["theme1", "theme2", "theme3"],
+    default: "theme1",
+  },
+  phone: {
+    type: String,
+  },
+  address: {
+    type: String,
   },
   password: {
     type: String,

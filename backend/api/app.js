@@ -10,6 +10,12 @@ const compression = require("compression");
 //const cors = require('cors');
 
 const userRouter = require("./routes/userRoutes");
+const patientRouter = require("./routes/patientRoutes");
+const doctorRouter = require("./routes/doctorRoutes");
+const feedbackRouter = require("./routes/feedbackRoutes");
+const slotRouter = require("./routes/slotRoutes");
+const planRouter = require("./routes/planRoutes");
+const searchRouter = require("./routes/searchRoutes");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
@@ -90,7 +96,14 @@ app.use((req, res, next) => {
 });
 
 // API ROUTES
+app.use("/api/v1/users/doctor", doctorRouter);
+app.use("/api/v1/users/patient", patientRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/feedbacks", feedbackRouter);
+app.use("/api/v1/slots", slotRouter);
+app.use("/api/v1/plans", planRouter);
+app.use("/api/v1/search", searchRouter);
+
 app.get("/", (req, res, next) => {
   res.json({
     message: "Welcome to the MedInsights Auth API v1.0",

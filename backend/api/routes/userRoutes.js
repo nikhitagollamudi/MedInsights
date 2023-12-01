@@ -8,16 +8,21 @@ router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.get("/logout", authController.logout);
 router.post("/forgotPassword", authController.forgotPassword);
-router.post("/forgotTwoFactor", authController.forgotTwoFactor);
 router.patch("/resetPassword/:token", authController.resetPassword);
+router.post("/forgotTwoFactor", authController.forgotTwoFactor);
 
 // protect all routes after this
-router.use(authController.protect);
+router.use(authController.protect); // verifies JWT and sets user
 
-router.patch("/updateMyPassword", authController.updatePassword);
-router.patch("/updateMe", userController.updateMe);
-router.delete("/deleteMe", userController.deleteMe);
 router.get("/me", userController.getMe, userController.getUser);
+router.patch(
+  "/updateMe",
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe
+);
+router.delete("/deleteMe", userController.deleteMe);
+router.patch("/updateMyPassword", authController.updatePassword);
 
 router.use(authController.restrictTo("admin"));
 

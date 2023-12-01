@@ -3,19 +3,17 @@ const pug = require("pug");
 const { convert } = require("html-to-text");
 
 module.exports = class Email {
-  constructor(user, qrCode) {
+  constructor(user, qrCode, passReset, plan, provider) {
     this.to = user.email;
     this.firstName = user.email.split(".")[0];
     this.qrCode = qrCode;
-    this.from = `Anurag Nampally <${process.env.EMAIL_FROM}>`;
+    this.passReset = passReset;
+    this.from = `MedInsights <${process.env.EMAIL_FROM}>`;
+    this.plan = plan;
+    this.provider = provider;
   }
 
   newTransport() {
-    if (process.env.NODE_ENV === "production") {
-      // NEED TO EXPLORE
-      return 1;
-    }
-
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -33,7 +31,10 @@ module.exports = class Email {
       {
         firstName: this.firstName,
         qrCode: this.qrCode,
+        url: this.passReset,
         subject,
+        plan: this.plan,
+        provider: this.provider,
       }
     );
 
@@ -49,14 +50,18 @@ module.exports = class Email {
     await transporter.sendMail(mailOptions);
   }
 
+  async sendNotification() {
+    await this.send("notify", "New Insurance Plan Added");
+  }
+
   async sendWelcome() {
-    await this.send("Welcome", "Welcome to the MedInsight Family");
+    await this.send("welcome", "Welcome to the MedInsight Family");
   }
 
   async sendPasswordReset() {
     await this.send(
       "passwordReset",
-      "Your password reset token (valid only for 10 minutes"
+      "Your password reset token (valid only for 10 minutes)"
     );
   }
 };

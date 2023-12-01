@@ -1,10 +1,44 @@
-const express = require('express');
-const doctorController = require('../controllers/doctorController');
+const express = require("express");
+const doctorController = require("../controllers/doctorController");
+const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
 
-export const doctorRouter = express.Router();
+const router = express.Router();
 
-doctorRouter.post('/', doctorController.createDoctor);
-doctorRouter.get('/', doctorController.getDoctors);
-doctorRouter.get('/:id', doctorController.getDoctorById);
-doctorRouter.put('/:id', doctorController.updateDoctor);
-doctorRouter.delete('/:id', doctorController.deleteDoctor);
+// protect all routes after this
+router.use(authController.protect); // verifies JWT and sets user
+
+router.get(
+  "/",
+  authController.restrictTo("patient", "admin"),
+  userController.setRole("doctor"),
+  userController.getAllUsers
+);
+router.get(
+  "/prisma",
+  authController.restrictTo("patient", "admin"),
+  doctorController.getAllDoctors
+);
+router.get(
+  "/specs",
+  authController.restrictTo("patient", "admin"),
+  doctorController.getAllSpecs
+);
+router.get("/me", userController.getMe, doctorController.getDoctor);
+router.patch(
+  "/updateMe",
+  userController.getMe,
+  doctorController.makeAndInsertSlots,
+  doctorController.updateDoctor
+);
+
+router
+  .route("/:id")
+  .get(
+    authController.restrictTo("patient", "admin"),
+    doctorController.getDoctor
+  )
+  .patch(authController.restrictTo("admin"), doctorController.updateDoctor)
+  .delete(authController.restrictTo("admin"), doctorController.deleteDoctor);
+
+module.exports = router;

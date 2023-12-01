@@ -1,10 +1,29 @@
-const express = require('express');
-const patientController = require('../controllers/patientController');
+const express = require("express");
+const patientController = require("../controllers/patientController");
+const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
 
-export const patientRouter = express.Router();
+const router = express.Router();
 
-patientRouter.post('/', patientController.createPatient);
-patientRouter.get('/', patientController.getPatients);
-patientRouter.get('/:id', patientController.getPatientById);
-patientRouter.put('/:id', patientController.updatePatient);
-patientRouter.delete('/:id', patientController.deletePatient);
+// protect all routes after this
+router.use(authController.protect); // verifies JWT and sets user
+router.use(authController.restrictTo("patient"));
+
+router.get("/me", userController.getMe, patientController.getPatient);
+router.patch(
+  "/updateMe",
+  userController.getMe,
+  patientController.updatePatient
+);
+
+router
+  .route("/:id")
+  .get(
+    authController.restrictTo("admin"),
+    userController.getUserById,
+    patientController.getPatient
+  )
+  .patch(authController.restrictTo("admin"), patientController.updatePatient)
+  .delete(authController.restrictTo("admin"), patientController.deletePatient);
+
+module.exports = router;

@@ -70,6 +70,7 @@ exports.getOne = (Model) => {
 exports.getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
     let filter = {}; // Additional filters can be added if required in future
+    if (req.params.role) filter.role = req.params.role;
     const features = new APIFeatures(Model.find(filter), req.query);
     features.filter().sort().limitFields().paginate();
 

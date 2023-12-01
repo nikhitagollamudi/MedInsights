@@ -8,6 +8,13 @@ const Email = require("../utils/emails");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
 const base32 = require("base32.js");
+const prisma = require("../utils/prismaClient");
+
+const getTable = (role) => {
+  if (role == "patient") return prisma.patients;
+  else if (role == "doctor") return prisma.doctors;
+  else if (role == "insurer") return prisma.insuranceProviders;
+};
 
 const signToken = (id) => {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -15,7 +22,7 @@ const signToken = (id) => {
   });
 };
 
-const createAndSendToken = (user, statusCode, req, res) => {
+const createAndSendToken = (user, req, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -29,33 +36,27 @@ const createAndSendToken = (user, statusCode, req, res) => {
 
   res.cookie("jwt", token, cookieOptions);
 
-  res.status(statusCode).json({
+  res.status(200).json({
     status: "success",
     token,
     data: {
       user: {
-        MongoId: user._id,
+        id: user._id,
+        name: user.name,
         email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+        theme: user.theme,
       },
     },
   });
 };
 
-exports.signup = catchAsync(async (req, res, next) => {
-  // Generate a TOTP secret key for the user
-  const secretKey = speakeasy.generateSecret();
-
-  // Store the user's data in the database
-  const newUser = await User.create({
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    secretKey: secretKey.base32,
-  });
-
+const createAndSendQR = (user, secretKey, req, res, mailOnly = false) => {
   // Generate a provisioning URL for the user to scan with their authenticator app
   const provisioningUri = speakeasy.otpauthURL({
-    secret: secretKey.ascii,
+    secret: secretKey,
     label: `${process.env.APP_NAME}:${req.body.email}`,
     issuer: `${process.env.APP_NAME}`,
   });
@@ -65,27 +66,57 @@ exports.signup = catchAsync(async (req, res, next) => {
     if (err) {
       return next(new AppError("There was an error generating QR Code", 500));
     }
-    // Return the provisioning URI and QR code to the client
-    await new Email(newUser, dataUrl).sendWelcome();
+    // Return the provisioning URI and QR code to the client via mail and response
+    await new Email(user, dataUrl).sendWelcome();
+    if (mailOnly) {
+      res.status(200).json({
+        status: "success",
+        message: "QR code sent to your Email",
+      });
+      return;
+    }
+
     res.status(200).json({
       status: "success",
       qrCode: dataUrl,
-      data: {
-        user: {
-          MongoId: newUser._id,
-          email: newUser.email,
-          secretKey: secretKey.base32,
-        },
-      },
+      secretKey,
     });
   });
+};
+
+exports.signup = catchAsync(async (req, res, next) => {
+  // Generate a TOTP secret key for the user
+  const secretKey = speakeasy.generateSecret();
+  if (req.body.role === "admin") req.body.role = "";
+
+  // Store the user's data in the database
+  const mongoUser = await User.create({
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
+    secretKey: secretKey.base32,
+  });
+
+  // create in postgres through prisma
+  const data = {
+    id: mongoUser._id,
+  };
+  if (mongoUser.role == "doctor") data.name = mongoUser.name;
+  else if (mongoUser.role == "insurer") data.providerName = mongoUser.name;
+  await getTable(mongoUser.role).create({
+    data,
+  });
+
+  createAndSendQR(mongoUser, secretKey.ascii, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  const { email, password, token } = req.body;
+  const { email, password, totp } = req.body;
 
-  if (!email || !password || !token)
-    return next(new AppError("Please provide email, password and token", 400));
+  if (!email || !password || !totp)
+    return next(new AppError("Please provide email, password and totp", 400));
 
   const user = await User.findOne({ email: email })
     .select("+password")
@@ -98,7 +129,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const verified = speakeasy.totp.verify({
     secret: user.secretKey,
     encoding: "base32",
-    token: token,
+    token: totp,
     window: 1,
   });
 
@@ -106,7 +137,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect TOTP Token", 401));
   }
 
-  createAndSendToken(user, 200, req, res);
+  createAndSendToken(user, req, res);
 });
 
 exports.logout = (req, res) => {
@@ -130,10 +161,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
+
   if (!token) {
     return next(new AppError("Your are not logged in !!", 401));
   }
-
   // 2) token verification
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
@@ -156,9 +187,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.restrictTo = (...accessLevels) => {
+exports.restrictTo = (...roles) => {
   return (req, res, next) => {
-    if (!accessLevels.includes(req.user.access)) {
+    if (!roles.includes(req.user.role)) {
       // due to closure
       return next(
         new AppError("You do not have permission to perform this action", 403)
@@ -184,7 +215,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${resetToken}`;
 
   try {
-    await new Email(user, resetURL).sendPasswordReset();
+    await new Email(user, "", resetURL).sendPasswordReset();
 
     res.status(200).json({
       status: "success",
@@ -212,26 +243,7 @@ exports.forgotTwoFactor = catchAsync(async (req, res, next) => {
   const decodedBuffer = decoder.write(user.secretKey).finalize();
   const asciiString = decodedBuffer.toString("utf8").replace(/\0/g, "");
 
-  // 2) create a provisiongUri from the secretKey
-  const provisioningUri = speakeasy.otpauthURL({
-    secret: asciiString,
-    label: `${process.env.APP_NAME}:${user.email}`,
-    issuer: `${process.env.APP_NAME}`,
-  });
-
-  // 3) Generate a QR code and send email
-  qrcode.toDataURL(provisioningUri, async (err, dataUrl) => {
-    if (err) {
-      return next(new AppError("There was an error generating QR Code", 500));
-    }
-    // Send the QR code via email to the user
-    await new Email(user, dataUrl).sendWelcome();
-
-    res.status(200).json({
-      status: "success",
-      message: "QR Code sent to email!",
-    });
-  });
+  createAndSendQR(user, asciiString, req, res, (mailOnly = true));
 });
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
@@ -257,7 +269,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   //4) Log the user in, send JWT
-  createAndSendToken(user, 201, req, res);
+  createAndSendToken(user, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -274,5 +286,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save(); // password.changedAt is implemented in middleware
 
   // 3) log user in, send JWT
-  createAndSendToken(user, 201, req, res);
+  createAndSendToken(user, req, res);
 });

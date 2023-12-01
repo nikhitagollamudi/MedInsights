@@ -1,7 +1,38 @@
 const User = require("../models/userModel");
-const catchAsync = require("../utils/catchAsync");
-const AppError = require("../utils/appError");
+const multer = require("multer");
+const sharp = require("sharp");
 const factory = require("./handlerFactory");
+const AppError = require("./../utils/appError");
+const catchAsync = require("../utils/catchAsync");
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else
+    cb(new AppError("Not an image! Please upload only images.", 400), false);
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.uploadUserPhoto = upload.single("photo");
+
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+  req.file.filename = `user-${req.user._id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+});
 
 exports.getAllUsers = factory.getAll(User);
 exports.getUser = factory.getOne(User);
@@ -18,10 +49,10 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getMe = (req, res, next) => {
+exports.getMe = catchAsync(async (req, res, next) => {
   req.params.id = req.user.id;
   next();
-};
+});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1) Create error if user posts password data
@@ -30,7 +61,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   }
 
   //2) Update user document
-  const filteredBody = filterObj(req.body, "email");
+  const filteredBody = filterObj(req.body, "name", "address", "phone", "theme");
+  if (req.file) filteredBody.photo = req.file.filename;
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
     runValidators: true,
@@ -45,7 +77,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user._id, { active: false });
+  await User.findByIdAndUpdate(req.user._id, {
+    active: false,
+  });
+
   res.status(204).json({
     status: "success",
     data: null,
@@ -58,3 +93,21 @@ exports.createUser = (req, res) => {
     message: "This route is not defined! please use /signup instead",
   });
 };
+
+exports.setRole = (role) => {
+  return (req, res, next) => {
+    req.params.role = role;
+    next();
+  };
+};
+
+exports.getUserById = catchAsync(async (req, res, next) => {
+  const doc = await User.findById(req.params.id);
+
+  if (!doc) {
+    return next(new AppError("No document found with that ID", 404));
+  }
+
+  res.locals.responseData = doc;
+  next();
+});
