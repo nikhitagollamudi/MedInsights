@@ -106,6 +106,113 @@ const tabs = [
     { id: 3, label: 'Professional Information', value: 'professional', isPatient: false, isDoctor: true, isInsurance: false }
 ]
 
+const specialities = [
+    { id: 1, label: 'Random Specialization 1' },
+    { id: 2, label: 'Random Specialization 2' },
+    { id: 3, label: 'Random Specialization 3' },
+    { id: 4, label: 'Random Specialization 4' }
+]
+
+const conditions = [
+    { id: 1, label: 'Fever' },
+    { id: 2, label: 'Cough' },
+    { id: 3, label: 'Fracture' },
+    { id: 4, label: 'Covid' }
+]
+
+const doctors = [
+    {
+        id: 1,
+        name: 'Dr. Ryan Doe',
+        specializations: ['Random Specialization 1', 'Random Specialization 2'],
+        treatsCovid: true,
+        hospital: {
+            id: 1,
+            name: 'IU Health'
+        },
+        feedbacks: [
+            { id: 1, from: 'Max', message: 'Very good doctor, patient and understanding.' },
+            { id: 2, from: 'Alex', message: 'Very good.' },
+            { id: 3, from: 'Maria', message: 'Patient and helpful' },
+            { id: 4, from: 'Isaac', message: 'Amazing doctor.' }
+        ]
+    },
+    {
+        id: 2,
+        name: 'Dr. Negan Doe',
+        specializations: ['Random Specialization 1', 'Random Specialization 2', 'Random Specialization 3'],
+        treatsCovid: true,
+        hospital: {
+            id: 2,
+            name: 'Bloomington Hospital'
+        },
+        feedbacks: [
+            { id: 1, from: 'Max', message: 'Very good doctor, patient and understanding.' },
+            { id: 2, from: 'Alex', message: 'Very good.' },
+            { id: 3, from: 'Maria', message: 'Patient and helpful' },
+            { id: 4, from: 'Isaac', message: 'Amazing doctor.' }
+        ]
+    },
+    {
+        id: 1,
+        name: 'Dr. Rick Grimes',
+        specializations: ['Random Specialization 1'],
+        treatsCovid: false,
+        hospital: {
+            id: 3,
+            name: 'Monroe Hospital'
+        },
+        feedbacks: [
+            { id: 1, from: 'Max', message: 'Very good doctor, patient and understanding.' },
+            { id: 2, from: 'Alex', message: 'Very good.' },
+            { id: 3, from: 'Maria', message: 'Patient and helpful' },
+            { id: 4, from: 'Isaac', message: 'Amazing doctor.' }
+        ]
+    },
+    {
+        id: 1,
+        name: 'Dr. Morgan Jones',
+        specializations: ['Random Specialization 1', 'Random Specialization 3'],
+        treatsCovid: false,
+        hospital: {
+            id: 4,
+            name: 'Bloomington Meadows Hospital'
+        },
+        feedbacks: [
+            { id: 1, from: 'Max', message: 'Very good doctor, patient and understanding.' },
+            { id: 2, from: 'Alex', message: 'Very good.' },
+            { id: 3, from: 'Maria', message: 'Patient and helpful' },
+            { id: 4, from: 'Isaac', message: 'Amazing doctor.' }
+        ]
+    },
+    {
+        id: 1,
+        name: 'Dr. Sean Davis',
+        specializations: ['Random Specialization 2', 'Random Specialization 4'],
+        treatsCovid: true,
+        hospital: {
+            id: 1,
+            name: 'IU Health'
+        },
+        feedbacks: [
+            { id: 1, from: 'Max', message: 'Very good doctor, patient and understanding.' },
+            { id: 2, from: 'Alex', message: 'Very good.' },
+            { id: 3, from: 'Maria', message: 'Patient and helpful' },
+            { id: 4, from: 'Isaac', message: 'Amazing doctor.' }
+        ]
+    }
+]
+
+const days = [
+    { id: 1, label: 'Sunday', value: 'sunday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 2, label: 'Monday', value: 'monday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 3, label: 'Tuesday', value: 'tuesday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 4, label: 'Wednesday', value: 'wednesday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 5, label: 'Thursday', value: 'thursday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 6, label: 'Friday', value: 'friday', isExpanded: false, startTime: "", endTime: "" },
+    { id: 7, label: 'Saturday', value: 'saturday', isExpanded: false, startTime: "", endTime: "" }
+]
+
 const getAllUsers = () => {
     return users;
 }
@@ -149,6 +256,57 @@ const getTabsByRole = (role: String) => {
     return tabs.filter(obj => obj[key]);
 }
 
+const getAllConditions = () => {
+    return conditions;
+}
+
+const getAllSpecialities = () => {
+    return specialities;
+}
+
+const getAllDays = () => {
+    return days;
+}
+
+const getAllTimes = () => {
+    let times = [];
+    for (let i = 0; i < 24; i++) {
+        let timeObj = {
+            label: `${i}:00`,
+            value: `${i}:00`
+        }
+        times.push(timeObj)
+    }
+    return times;
+}
+
+const getAllTimesAfter = (time: any) => {
+    let times = [], startingIndex = time.split(':')[0];
+    for (let i = startingIndex; i < 24; i++) {
+        let timeObj = {
+            label: `${i}:00`,
+            value: `${i}:00`
+        }
+        times.push(timeObj)
+    }
+    return times;
+}
+
+const getDoctors = (payload: any) => {
+    let list = [];
+    if (payload?.specialities?.length) {
+        for (let i = 0; i < doctors.length; i++) {
+            const doctor = doctors[i];
+            if (doctor.specializations.some(item => payload.specialities.includes(item))) {
+                list.push(doctor);
+            }
+        }
+    } else {
+        list = doctors;
+    }
+    return payload && payload.searchText.length ? list.filter(doc => doc.name.toLowerCase().includes(payload.searchText)) : doctors;
+}
+
 export const Helper = {
     getAllUsers,
     getUserByEmail,
@@ -157,5 +315,11 @@ export const Helper = {
     getTopCardsByEmail,
     getNotificationsByEmail,
     getTheme,
-    getTabsByRole
+    getTabsByRole,
+    getAllConditions,
+    getAllSpecialities,
+    getAllDays,
+    getAllTimes,
+    getAllTimesAfter,
+    getDoctors
 }

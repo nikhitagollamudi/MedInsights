@@ -9,7 +9,7 @@ import Register from "../pages/Auth/Register";
 import TwoFactorAuth from "../components/common/TwoFactorAuth";
 import DashboardHome from "../pages/DashboardHome/DashboardHome";
 import Settings from "../pages/Settings/Settings";
-
+import Doctors from "../pages/Doctors/Doctors";
 
 interface createBrowserRouter {
     routes: RouteObject[],
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'doctors',
-                        element: ''
+                        element: <Doctors />
                     },
                     {
                         path: 'insurances',

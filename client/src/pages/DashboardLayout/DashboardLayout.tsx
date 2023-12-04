@@ -15,7 +15,7 @@ const DashboardLayout: React.FC = () => {
     return (
         <>
             <Sidebar />
-            <Box sx={{ width: `calc(100% - ${drawerWidth}px)`, marginLeft: `${drawerWidth}px`, padding: 8, height: `calc(100vh - 64px)` }}>
+            <Box sx={{ width: `calc(100% - ${drawerWidth}px)`, marginLeft: `${drawerWidth}px`, padding: 8, height: `calc(100vh - 64px)`, overflowY: 'scroll' }}>
                 <Outlet />
             </Box>
         </>
