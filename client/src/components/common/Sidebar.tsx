@@ -12,6 +12,7 @@ import MedicalInformationIcon from '@mui/icons-material/MedicalInformation';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 import { useThemeContext } from "../../contexts/ThemeContext";
 import Divider from '@mui/material/Divider';
+import { useLocation, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -42,6 +43,12 @@ const Sidebar = () => {
     const [sidebarOptions, setSidebarOptions] = useState<{}[]>([]);
     const [user, setUser] = useState(auth?.authState?.user);
     const primary = theme?.currentTheme.palette.primary.main;
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
+
+    const goToRoute = (route: string) => {
+        navigate(route);
+    }
 
     useEffect(() => {
         setUser(auth?.authState?.user);
@@ -65,15 +72,15 @@ const Sidebar = () => {
                     <PersonIcon />
                 </Box>
                 <Box>
-                    <Typography>{user?.fullName}</Typography>
+                    <Typography>{user?.name}</Typography>
                     <Typography variant="subtitle2" fontStyle={'italic'}>{user?.role}</Typography>
                 </Box>
             </Toolbar>
             <Divider />
             <List>
                 {sidebarOptions.map((opt: any) => (
-                    <ListItem key={opt.id} disablePadding>
-                        <ListItemButton>
+                    <ListItem key={opt.id} disablePadding onClick={() => goToRoute(opt.path)}>
+                        <ListItemButton selected={pathname === opt.path}>
                             <ListItemIcon sx={{ color: primary }}>
                                 {getIcon(opt)}
                             </ListItemIcon>

@@ -4,7 +4,7 @@ import theme2 from '../themes/theme1';
 const users = [
     {
         MongoId: '1',
-        fullName: 'John Doe',
+        name: 'John Doe',
         email: 'abc@example.com',
         role: 'Patient',
         theme: 'theme1',
@@ -18,11 +18,19 @@ const users = [
             { id: 2, date: '10/23/2023', body: 'You have an upcoming appointment with Dr. Jane. To modify or cancel the appointment, click here.' },
             { id: 3, date: '10/10/2023', body: 'Dr. Ryan replied to your message. Click here to view the message and reply back.' },
             { id: 4, date: '09/13/2023', body: 'Payment successful! You subscribed to the Medicare Plan A. Click to view your insurance plan details.' },
-        ]
+        ],
+        medicalInformation: {
+            id: "1",
+            medicalHistory: "Medical history 1",
+            covid19Symptoms: {
+                fever: true,
+                cough: false
+            }
+        }
     },
     {
         MongoId: '2',
-        fullName: 'Ryan Doe',
+        name: 'Ryan Doe',
         email: 'abc2@example.com',
         role: 'Doctor',
         theme: 'theme2',
@@ -36,11 +44,17 @@ const users = [
             { id: 2, date: '10/29/2023', body: 'You have an upcoming appointment with John. To modify or cancel the appointment, click here.' },
             { id: 3, date: '10/18/2023', body: 'Roy replied to your message. Click here to view the message and reply back.' },
             { id: 4, date: '09/29/2023', body: 'You have a new appointment request. Click here to view details.' },
-        ]
+        ],
+        professionalInformation:  {
+            id: "b6ccccf1-c549-4b4f-99f7-64fa40f8f2b0",
+            hospitalId: "110e79d3-c84a-4ffe-85f7-6f1ed662b1dd",
+            specialization: "Random Specialization",
+            treatsCovid: true
+        }
     },
     {
         MongoId: '3',
-        fullName: 'Max Doe',
+        name: 'Max Doe',
         email: 'abc3@example.com',
         role: 'Insurer',
         theme: 'theme1',
@@ -58,7 +72,7 @@ const users = [
 ]
 
 const sidebarOptions = [
-    { id: 1, name: 'Home', path: '/app/dashboard', isPatient: true, isDoctor: true, isInsurance: true },
+    { id: 1, name: 'Home', path: '/app', isPatient: true, isDoctor: true, isInsurance: true },
     { id: 2, name: 'Appointments', path: '/app/appointments', isPatient: true, isDoctor: true, isInsurance: false },
     { id: 3, name: 'Doctors', path: '/app/doctors', isPatient: true, isDoctor: false, isInsurance: true },
     { id: 4, name: 'Patients', path: '/app/patients', isPatient: false, isDoctor: true, isInsurance: true },
@@ -86,6 +100,12 @@ const themeMappings = [
     { id: 2, label: 'theme2', value: theme2 }
 ]
 
+const tabs = [
+    { id: 1, label: 'Personal Information', value: 'personal', isPatient: true, isDoctor: true, isInsurance: true },
+    { id: 2, label: 'Medical Information', value: 'medical', isPatient: true, isDoctor: false, isInsurance: false },
+    { id: 3, label: 'Professional Information', value: 'professional', isPatient: false, isDoctor: true, isInsurance: false }
+]
+
 const getAllUsers = () => {
     return users;
 }
@@ -94,13 +114,17 @@ const getUserByEmail = (email: any) => {
     return users.find(user => user.email === email);
 }
 
+const getKeyByRole = (role: String) => {
+    return role === 'Patient' ? 'isPatient' : role === 'Doctor' ? 'isDoctor' : 'isInsurance';
+}
+
 const getSidebarOptionsByRole = (role: String) => {
-    const key = role === 'Patient' ? 'isPatient' : role === 'Doctor' ? 'isDoctor' : 'isInsurance';
+    const key = getKeyByRole(role);
     return sidebarOptions.filter(opt => opt[key]);
 }
 
 const getTopBarCardsByRole = (role: String) => {
-    const key = role === 'Patient' ? 'isPatient' : role === 'Doctor' ? 'isDoctor' : 'isInsurance';
+    const key = getKeyByRole(role);
     return topBarCards.filter(obj => obj[key]);
 }
 
@@ -120,6 +144,11 @@ const getTheme = (theme: String) => {
     return themeMappings.find(opt => opt.label === theme)?.value || theme1;
 }
 
+const getTabsByRole = (role: String) => {
+    const key = getKeyByRole(role);
+    return tabs.filter(obj => obj[key]);
+}
+
 export const Helper = {
     getAllUsers,
     getUserByEmail,
@@ -127,5 +156,6 @@ export const Helper = {
     getTopBarCardsByRole,
     getTopCardsByEmail,
     getNotificationsByEmail,
-    getTheme
+    getTheme,
+    getTabsByRole
 }

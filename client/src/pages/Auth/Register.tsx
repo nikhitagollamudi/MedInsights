@@ -21,7 +21,7 @@ const Register = () => {
 
     const handleRegister = async () => {
         const user = await AuthService.register({
-            fullName: 'John Doe',
+            name: 'John Doe',
             email: 'abc@example.com',
             role: 'Patient'
         });

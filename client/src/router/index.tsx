@@ -8,6 +8,7 @@ import AuthLayout from "../pages/Auth/AuthLayout";
 import Register from "../pages/Auth/Register";
 import TwoFactorAuth from "../components/common/TwoFactorAuth";
 import DashboardHome from "../pages/DashboardHome/DashboardHome";
+import Settings from "../pages/Settings/Settings";
 
 
 interface createBrowserRouter {
@@ -90,7 +91,7 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'settings',
-                        element: '',
+                        element: <Settings />,
                     }
                 ]
             }
