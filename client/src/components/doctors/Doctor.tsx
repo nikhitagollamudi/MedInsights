@@ -1,10 +1,10 @@
 import { Box, Card, CardActionArea, CardContent, Chip, Link, Stack, Typography } from "@mui/material";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 
-const Doctor = ({ doctor }: { doctor: any }) => {
+const Doctor = ({ doctor, onClick }: { doctor: any, onClick:(doctor: any) => void }) => {
     return (
         <Card variant="outlined" elevation={0}>
-            <CardActionArea sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingX: 4 }}>
+            <CardActionArea sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', paddingX: 4 }} onClick={() => onClick(doctor)}>
                 <Box display={'flex'} alignItems={'center'} justifyContent={'center'} bgcolor={'#efefef'} p={2} borderRadius={'50%'} mr={5}>
                     <LocalHospitalIcon fontSize="large" color={'primary'}></LocalHospitalIcon>
                 </Box>

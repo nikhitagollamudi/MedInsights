@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import { ActionFunction, ShouldRevalidateFunction } from "react-router-dom";
 import LandingPage from "../pages/Landing/LandingPage";
 import Login from "../pages/Auth/Login";
 import DashboardLayout from "../pages/DashboardLayout/DashboardLayout";
@@ -10,29 +9,11 @@ import TwoFactorAuth from "../components/common/TwoFactorAuth";
 import DashboardHome from "../pages/DashboardHome/DashboardHome";
 import Settings from "../pages/Settings/Settings";
 import Doctors from "../pages/Doctors/Doctors";
-
-interface createBrowserRouter {
-    routes: RouteObject[],
-    opts?: {
-      basename?: string;
-      window?: Window;
-    }
-}
-
-interface RouteObject {
-    path?: string;
-    index?: boolean;
-    children?: React.ReactNode;
-    caseSensitive?: boolean;
-    id?: string;
-    loader?: any;
-    action?: ActionFunction;
-    element?: React.ReactNode | null;
-    Component?: React.ComponentType | null;
-    errorElement?: React.ReactNode | null;
-    ErrorBoundary?: React.ComponentType | null;
-    shouldRevalidate?: ShouldRevalidateFunction;
-}
+import Plans from "../pages/Plans/Plans";
+import Insurances from "../pages/Insurances/Insurances";
+import DoctorDetail from "../pages/Doctors/DoctorDetail";
+import Appointments from "../pages/Appointments/Appointments";
+import Patients from "../pages/Patients/Patients";
 
 const router = createBrowserRouter([
     {
@@ -71,23 +52,27 @@ const router = createBrowserRouter([
                     },
                     {
                         path: 'appointments',
-                        element: ''
+                        element: <Appointments />
                     },
                     {
                         path: 'doctors',
                         element: <Doctors />
                     },
                     {
+                        path: 'doctors/:doctorId',
+                        element: <DoctorDetail />
+                    },
+                    {
                         path: 'insurances',
-                        element: ''
+                        element: <Insurances />
                     },
                     {
                         path: 'patients',
-                        element: ''
+                        element: <Patients />
                     },
                     {
                         path: 'plans',
-                        element: ''
+                        element: <Plans />
                     },
                     {
                         path: 'settings',
