@@ -41,8 +41,8 @@ const Plan = ({ plan, onPlanUpdate, onPlanDelete, onPlanView, onPlanSubscribe, o
                     { onPlanDelete && <IconButton color="primary" onClick={() => onPlanDelete(plan)}>
                         <DeleteIcon />
                     </IconButton> }
-                    { user.role === 'Patient' && onPlanSubscribe && <Button color="primary" disabled={ user?.planId === plan.id } onClick={() => onPlanSubscribe(plan)}>{ user?.planId === plan.id ? 'Subscribed' : 'Subscribe' }</Button> }
-                    { user.role === 'Doctor' && onPlanAccept && <Button color="primary" disabled={ user?.planId === plan.id } onClick={() => onPlanAccept(plan)}>{ user?.planId === plan.id ? 'Accepted' : 'Accept' }</Button> }
+                    { user.role === 'patient' && onPlanSubscribe && <Button color="primary" disabled={ user?.planId === plan.id } onClick={() => onPlanSubscribe(plan)}>{ user?.planId === plan.id ? 'Subscribed' : 'Subscribe' }</Button> }
+                    { user.role === 'doctor' && onPlanAccept && <Button color="primary" disabled={ user?.planId === plan.id } onClick={() => onPlanAccept(plan)}>{ user?.planId === plan.id ? 'Accepted' : 'Accept' }</Button> }
                 </Box>
             </CardActions>
         </Card>

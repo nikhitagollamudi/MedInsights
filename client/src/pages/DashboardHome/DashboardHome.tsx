@@ -11,8 +11,7 @@ const DashboardHome = () => {
     const [notifications, setNotifications] = useState<{}[]>([]);
 
     useEffect(() => {
-        const data = Helper.getNotificationsByEmail(auth?.authState?.user.email);
-        setNotifications(data);
+        Helper.getNotificationsByEmail().then((data: any) => setNotifications(data));
     }, []);
 
     return (

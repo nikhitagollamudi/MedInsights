@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, InputAdornment, IconButton, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+import { Box, Typography, TextField, InputAdornment, IconButton, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Button, Snackbar } from "@mui/material";
 import { useContext, useState } from "react";
 import PersonIcon from '@mui/icons-material/Person';
 import { Visibility, VisibilityOff } from "@mui/icons-material"
@@ -6,11 +6,12 @@ import AuthContext from "../../contexts/AuthContext";
 import theme1 from "../../themes/default";
 import theme2 from "../../themes/theme1";
 import { useThemeContext } from "../../contexts/ThemeContext";
+import { Helper } from "../../services/helper";
 
-const ThemeMenuItem = ({item}: {item: string}) => {
+const ThemeMenuItem = ({ item }: { item: string }) => {
     const selectedTheme = item === 'theme1' ? theme1 : theme2;
     const primary = selectedTheme?.palette.primary;
-    
+
     return (
         <Box display={'flex'} alignItems={'center'} flex={1}>
             <Box flex={0.2} bgcolor={primary.main} minHeight={28}></Box>
@@ -27,25 +28,54 @@ const PersonalInformation = () => {
     const { toggleTheme } = useThemeContext();
     const [showPassword, setShowPassword] = useState(false);
     const [userForm, setUserForm] = useState(user);
-    
+    const [updatedForm, setUpdatedForm] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [submittedFailed, setSubmittedFailed] = useState(false);
+
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const handleValueChange = (e: React.ChangeEvent<any>) => {
         const { name, value } = e.target;
         if (name === 'theme') {
             toggleTheme();
         }
-        const newUserForm = { ...userForm, [name]: value}
+        const newUserForm = { ...userForm, [name]: value }
+        setUpdatedForm(true);
         setUserForm(newUserForm);
     }
+
+    const onSubmit = () => {
+        if (updatedForm) {
+            Helper.updateUser(userForm).then((res) => {
+                setUpdatedForm(false);
+                auth?.dispatch({
+                    type: 'LOGIN',
+                    payload: {
+                        user: res
+                    }
+                });
+                localStorage.setItem('user', JSON.stringify(res));
+            }).catch((err) => {
+                console.log("Error:", err);
+                setSubmittedFailed(true);
+            }).finally(() => {
+                setSubmitted(true);
+            });
+        }
+    }
+
+    const handleCloseSnackbar = () => {
+        setSubmitted(false);
+    }
+
     return (
         <Box component="form" noValidate autoComplete="off">
-            <Box 
-                component={'div'} 
-                borderRadius={'50%'} 
-                width={75} 
-                height={75} 
-                display={'flex'} 
-                alignItems={'center'} 
+            <Box
+                component={'div'}
+                borderRadius={'50%'}
+                width={75}
+                height={75}
+                display={'flex'}
+                alignItems={'center'}
                 justifyContent={'center'}
                 bgcolor={'#efefef'}
                 mb={4}
@@ -53,11 +83,11 @@ const PersonalInformation = () => {
                 <PersonIcon />
             </Box>
             <Box flex={1} flexDirection={'row'} alignItems={'center'} mb={4}>
-                <TextField 
+                <TextField
                     id="name"
                     name="name"
-                    label="Full Name" 
-                    variant="outlined" 
+                    label="Full Name"
+                    variant="outlined"
                     value={userForm.name}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleValueChange(e)}
                     sx={{
@@ -65,11 +95,11 @@ const PersonalInformation = () => {
                         minWidth: 350
                     }}
                 />
-                <TextField 
-                    id="email" 
+                <TextField
+                    id="email"
                     name="email"
-                    label="Email" 
-                    variant="outlined" 
+                    label="Email"
+                    variant="outlined"
                     value={userForm.email}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleValueChange(e)}
                     sx={{
@@ -78,15 +108,15 @@ const PersonalInformation = () => {
                 />
             </Box>
             <Box flex={1} flexDirection={'row'} alignItems={'center'} mb={4}>
-                <TextField 
-                    id="password" 
+                <TextField
+                    id="password"
                     name="password"
-                    label="Password" 
-                    variant="outlined" 
+                    label="Password"
+                    variant="outlined"
                     value={userForm.password}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleValueChange(e)}
                     InputProps={{
-                        endAdornment: 
+                        endAdornment:
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label="toggle password visibility"
@@ -111,7 +141,7 @@ const PersonalInformation = () => {
                         value={userForm.role.toLowerCase()}
                         onChange={(e: any) => handleValueChange(e)}
                         label="Role"
-                        >
+                    >
                         <MenuItem value={'patient'}>Patient</MenuItem>
                         <MenuItem value={'doctor'}>Doctor</MenuItem>
                         <MenuItem value={'insurer'}>Insurance Provider</MenuItem>
@@ -129,7 +159,7 @@ const PersonalInformation = () => {
                         onChange={(e: any) => handleValueChange(e)}
                         label="Theme"
                         renderValue={(selected) => <ThemeMenuItem item={selected} />}
-                        >
+                    >
                         <MenuItem value={'theme1'}>
                             <ThemeMenuItem item={"theme1"} />
                         </MenuItem>
@@ -138,6 +168,32 @@ const PersonalInformation = () => {
                         </MenuItem>
                     </Select>
                 </FormControl>
+            </Box>
+            <Box flex={1} flexDirection={'row'} alignItems={'center'} mb={4}>
+                <FormControl sx={{ minWidth: 350, paddingTop: 2.5 }}>
+                    <Button variant="contained" color="primary" onClick={onSubmit}>
+                        Submit
+                    </Button>
+                </FormControl>
+            </Box>
+            <Box>
+                {
+                    submittedFailed ?
+                        <Snackbar
+                            open={submitted}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message={"Failed"}
+                            sx={{ backgroundColor: 'red' }}
+                        />
+                        : <Snackbar
+                            open={submitted}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message={ "Submitted"}
+                            sx={{ backgroundColor: 'green' }}
+                        />
+                }
             </Box>
         </Box>
     );

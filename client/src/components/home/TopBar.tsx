@@ -8,8 +8,7 @@ const TopBar = () => {
     const [topBarCards, setTopBarCards] = useState<{}[]>([]);
 
     useEffect(() => {
-        const options = Helper.getTopCardsByEmail(auth?.authState?.user?.email)
-        setTopBarCards(options);
+        Helper.getTopCardsByEmail().then((cards: any) => setTopBarCards(cards));
     }, [auth]);
 
     return (

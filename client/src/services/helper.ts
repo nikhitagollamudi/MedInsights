@@ -1,103 +1,8 @@
 import theme1 from '../themes/default';
 import theme2 from '../themes/theme1';
+import axios from 'axios';
 
-const users = [
-    {
-        MongoId: '1',
-        name: 'John Doe',
-        email: 'abc@example.com',
-        role: 'Patient',
-        theme: 'theme1',
-        dashboardMetadata: [
-            { id: 1, label: 'Plans', value: 20, key: 'plans' },
-            { id: 2, label: 'Doctors', value: 50, key: 'doctors' },
-            { id: 3, label: 'Appointments', value: 8, key: 'appointments' }
-        ],
-        recents: [
-            { id: 1, date: '10/29/2023', body: 'You unsubscribed from the insurance plan: Medicare Plan B. Click here to view more details.' },
-            { id: 2, date: '10/23/2023', body: 'You have an upcoming appointment with Dr. Jane. To modify or cancel the appointment, click here.' },
-            { id: 3, date: '10/10/2023', body: 'Dr. Ryan replied to your message. Click here to view the message and reply back.' },
-            { id: 4, date: '09/13/2023', body: 'Payment successful! You subscribed to the Medicare Plan A. Click to view your insurance plan details.' },
-        ],
-        medicalInformation: {
-            id: "1",
-            medicalHistory: "Medical history 1",
-            covid19Symptoms: {
-                fever: true,
-                cough: false
-            }
-        },
-        planId: 1
-    },
-    {
-        MongoId: '4',
-        name: 'Alex Doe',
-        email: 'abc4@example.com',
-        role: 'Patient',
-        theme: 'theme2',
-        dashboardMetadata: [
-            { id: 1, label: 'Plans', value: 20, key: 'plans' },
-            { id: 2, label: 'Doctors', value: 50, key: 'doctors' },
-            { id: 3, label: 'Appointments', value: 8, key: 'appointments' }
-        ],
-        recents: [
-            { id: 1, date: '10/29/2023', body: 'You unsubscribed from the insurance plan: Medicare Plan B. Click here to view more details.' },
-            { id: 2, date: '10/23/2023', body: 'You have an upcoming appointment with Dr. Jane. To modify or cancel the appointment, click here.' },
-            { id: 3, date: '10/10/2023', body: 'Dr. Ryan replied to your message. Click here to view the message and reply back.' },
-            { id: 4, date: '09/13/2023', body: 'Payment successful! You subscribed to the Medicare Plan A. Click to view your insurance plan details.' },
-        ],
-        medicalInformation: {
-            id: "2",
-            medicalHistory: "Medical history 2",
-            covid19Symptoms: {
-                fever: false,
-                cough: false
-            }
-        },
-        planId: 3
-    },
-    {
-        MongoId: '2',
-        name: 'Ryan Doe',
-        email: 'abc2@example.com',
-        role: 'Doctor',
-        theme: 'theme2',
-        dashboardMetadata: [
-            { id: 1, label: 'Appointments', value: 12, key: 'appointments' },
-            { id: 2, label: 'Patients', value: 150, key: 'patients' },
-            { id: 3, label: 'Plans', value: 43, key: 'plans' }
-        ],
-        recents: [
-            { id: 1, date: '11/03/2023', body: 'You added the insurance plan: Medicare Plan B to your accepted list. Click here to view more details.' },
-            { id: 2, date: '10/29/2023', body: 'You have an upcoming appointment with John. To modify or cancel the appointment, click here.' },
-            { id: 3, date: '10/18/2023', body: 'Roy replied to your message. Click here to view the message and reply back.' },
-            { id: 4, date: '09/29/2023', body: 'You have a new appointment request. Click here to view details.' },
-        ],
-        professionalInformation:  {
-            id: "b6ccccf1-c549-4b4f-99f7-64fa40f8f2b0",
-            hospitalId: "110e79d3-c84a-4ffe-85f7-6f1ed662b1dd",
-            specialization: "Random Specialization",
-            treatsCovid: true
-        }
-    },
-    {
-        MongoId: '3',
-        name: 'Max Doe',
-        email: 'abc3@example.com',
-        role: 'Insurer',
-        theme: 'theme1',
-        dashboardMetadata: [
-            { id: 1, label: 'Plans', value: 16, key: 'plans' },
-            { id: 2, label: 'Members', value: 1250, key: 'patients' },
-            { id: 2, label: 'Affiliated Doctors', value: 110, key: 'doctors' },
-        ],
-        recents: [
-            { id: 1, date: '11/04/2023', body: 'You created a new insurance plan: Medicare Plan X. Click here to view more details.' },
-            { id: 2, date: '11/01/2023', body: 'John subscribed to the insurance plan: Medicare Plan A. Click here to view more details.' },
-            { id: 3, date: '10/10/2023', body: 'Dr. Ryan replied to your message. Click here to view the message and reply back.' }
-        ]
-    }
-]
+const { REACT_APP_API_URL } = process.env;
 
 const sidebarOptions = [
     { id: 1, name: 'Home', path: '/app', isPatient: true, isDoctor: true, isInsurance: true },
@@ -127,13 +32,6 @@ const tabs = [
     { id: 3, label: 'Professional Information', value: 'professional', isPatient: false, isDoctor: true, isInsurance: false }
 ]
 
-const specialities = [
-    { id: 1, label: 'Random Specialization 1' },
-    { id: 2, label: 'Random Specialization 2' },
-    { id: 3, label: 'Random Specialization 3' },
-    { id: 4, label: 'Random Specialization 4' }
-]
-
 const conditions = [
     { id: 1, label: 'Fever' },
     { id: 2, label: 'Cough' },
@@ -141,7 +39,7 @@ const conditions = [
     { id: 4, label: 'Covid' }
 ]
 
-const doctors = [
+const hardCodedDoctors = [
     {
         id: 2,
         name: 'Dr. Ryan Doe',
@@ -298,13 +196,13 @@ const patients = [
 ]
 
 const days = [
-    { id: 1, label: 'Sunday', value: 'sunday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 2, label: 'Monday', value: 'monday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 3, label: 'Tuesday', value: 'tuesday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 4, label: 'Wednesday', value: 'wednesday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 5, label: 'Thursday', value: 'thursday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 6, label: 'Friday', value: 'friday', isExpanded: false, startTime: "", endTime: "" },
-    { id: 7, label: 'Saturday', value: 'saturday', isExpanded: false, startTime: "", endTime: "" }
+    { label: 'Sunday', value: 'sunday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Monday', value: 'monday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Tuesday', value: 'tuesday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Wednesday', value: 'wednesday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Thursday', value: 'thursday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Friday', value: 'friday', isExpanded: false, startTime: "", endTime: "" },
+    { label: 'Saturday', value: 'saturday', isExpanded: false, startTime: "", endTime: "" }
 ]
 
 const plans = [
@@ -404,16 +302,68 @@ const appointments = [
     }
 ]
 
-const getAllUsers = () => {
-    return users;
+const getUser = async (): Promise<any> => {
+    const user = await axios.get(`${REACT_APP_API_URL}/api/v1/users/me`, {
+        withCredentials: true
+    });
+
+    if (user.data.status !== 'success') return null; // TODO - Handle error (route to login screen?)
+
+    return user.data.data.user;
 }
 
-const getUserByEmail = (email: any) => {
-    return users.find(user => user.email === email);
+const updateUser = async (payload: any): Promise<any> => {
+    const user = await axios.patch(`${REACT_APP_API_URL}/api/v1/users/updateMe`, payload, {
+        withCredentials: true
+    });
+
+    if (user.data.status !== 'success') {
+        throw new Error(user.data.message);
+    }
+
+    return user.data.data.user;
+}
+
+const userLogin = async (payload: any): Promise<any> => {
+    const user = await axios.post(`${REACT_APP_API_URL}/api/v1/users/login`, {
+        email: payload.email,
+        password: payload.password,
+        totp: payload.totp
+    }, {
+        withCredentials: true
+    });
+
+    if (user.status !== 200) return null; // TODO - Handle error (route to login screen?)
+
+    return {
+        token: user.data.token,
+        user: user.data.data.user
+    };
+}
+
+const userRegister = async (payload: any): Promise<any> => {
+    const user = await axios.post(`${REACT_APP_API_URL}/api/v1/users/signup`, {
+        email: payload.email,
+        password: payload.password,
+        passwordConfirm: payload.passwordConfirm,
+        name: payload.name,
+        phone: payload.phone,
+        address: payload.address,
+        role: payload.role,
+        theme: payload.theme
+    }, {
+        withCredentials: true
+    });
+
+    if (user.status !== 200) {
+        return null; // TODO - Handle error (route to register screen?)
+    }
+
+    return user.data;
 }
 
 const getKeyByRole = (role: String) => {
-    return role === 'Patient' ? 'isPatient' : role === 'Doctor' ? 'isDoctor' : 'isInsurance';
+    return role === 'patient' ? 'isPatient' : role === 'doctor' ? 'isDoctor' : 'isInsurance';
 }
 
 const getSidebarOptionsByRole = (role: String) => {
@@ -426,15 +376,15 @@ const getTopBarCardsByRole = (role: String) => {
     return topBarCards.filter(obj => obj[key]);
 }
 
-const getTopCardsByEmail = (email: String) => {
-    const user = getUserByEmail(email);
+const getTopCardsByEmail = async () => {
+    const user = await getUser();
 
     return user?.dashboardMetadata || [];
 }
 
-const getNotificationsByEmail = (email: String) => {
-    const user = getUserByEmail(email);
-    
+const getNotificationsByEmail = async () => {
+    const user = await getUser();
+
     return user?.recents || [];
 }
 
@@ -451,8 +401,11 @@ const getAllConditions = () => {
     return conditions;
 }
 
-const getAllSpecialities = () => {
-    return specialities;
+const getAllSpecialities = async () => {
+    const specialitiesData = await axios.get(`${REACT_APP_API_URL}/api/v1/users/doctor/specs`, {
+        withCredentials: true
+    });
+    return specialitiesData.data.data.data;
 }
 
 const getAllDays = () => {
@@ -491,23 +444,21 @@ const getAllPatients = () => {
     return patients;
 }
 
-const getDoctors = (payload: any) => {
-    let list = [];
-    if (payload?.specialities?.length) {
-        for (let i = 0; i < doctors.length; i++) {
-            const doctor = doctors[i];
-            if (doctor.specializations.some(item => payload.specialities.includes(item))) {
-                list.push(doctor);
-            }
-        }
-    } else {
-        list = doctors;
-    }
-    return payload && payload.searchText.length ? list.filter(doc => doc.name.toLowerCase().includes(payload.searchText)) : doctors;
+// Need to create a 'get all doctors' endpoint on the API
+const getDoctors = async (name : string | null, treatsCovid : boolean | null, specializations : [] | null) => {
+    const doctors = await axios.get(`${REACT_APP_API_URL}/api/v1/search?name=${name == '' ? null : name}&treatsCovid=${treatsCovid}&specialization=${JSON.stringify(specializations != null ? specializations : [])}`, {
+        withCredentials: true
+    });
+
+    if (doctors.status !== 200) return [];
+
+    const doctorsList = doctors.data.data;
+
+    return doctorsList.filter((doc: any) => doc.name.toLowerCase());
 }
 
 const getAllAppointments = (id: any, role: any) => {
-    const key = role === 'Doctor' ? 'doctor' : 'patient';
+    const key = role === 'doctor' ? 'doctor' : 'patient';
     return appointments.filter((appointment: any) => appointment[key].id == id);
 }
 
@@ -516,14 +467,13 @@ const getPlanByUser = (planId: any) => {
 }
 
 const getDoctorById = (id: number) => {
-    return doctors.find(doctor => doctor.id === id);
+    return hardCodedDoctors.find(doctor => doctor.id === id);
 }
 
 const getTimeSlots = (day: any) => {
     const slots = [];
-    for (let i = 0; i < 24; i+=2) {
+    for (let i = 0; i < 24; i += 2) {
         const obj = {
-            id: i,
             label: `${i}:00`
         }
         slots.push(obj);
@@ -532,8 +482,7 @@ const getTimeSlots = (day: any) => {
 }
 
 export const Helper = {
-    getAllUsers,
-    getUserByEmail,
+    getUser,
     getSidebarOptionsByRole,
     getTopBarCardsByRole,
     getTopCardsByEmail,
@@ -551,5 +500,8 @@ export const Helper = {
     getDoctorById,
     getTimeSlots,
     getAllAppointments,
-    getAllPatients
+    getAllPatients,
+    userLogin,
+    userRegister,
+    updateUser,
 }

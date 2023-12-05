@@ -18,10 +18,23 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const auth = useContext(AuthContext);
-  const [theme, setTheme] = useState(theme1);
+  const [theme, setTheme] = useState(auth?.authState?.user?.theme ?? theme1);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => (prevTheme === theme1 ? theme2 : theme1));
+    setTheme((prevTheme: Theme) => {
+      return (prevTheme === theme1 ? theme2 : theme1)
+    });
+    Helper.updateUser({ theme: theme === theme1 ? 'theme2' : 'theme1' }).then((res) => {
+      auth?.dispatch({
+        type: 'LOGIN',
+        payload: {
+          user: res
+        }
+      });
+      localStorage.setItem('user', JSON.stringify(res));
+    }).catch((err) => {
+      console.log("Error:", err);
+    });
   };
 
   useEffect(() => {

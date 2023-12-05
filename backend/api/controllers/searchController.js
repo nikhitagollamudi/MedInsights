@@ -6,7 +6,7 @@ const options = {
   includeScore: true,
   findAllMatches: true,
   threshold: 0.1,
-  keys: ["name", "specialization"],
+  keys: ["name"],
 };
 
 module.exports = catchAsync(async (req, res) => {
@@ -14,47 +14,45 @@ module.exports = catchAsync(async (req, res) => {
 
   let whereClause = {};
 
-  if (treatsCovid) {
+  if (treatsCovid != "null") {
     whereClause.treatsCovid = treatsCovid.toLowerCase() === "true";
   }
 
   const data = await prisma.doctors.findMany({
     where: whereClause,
+    include: { feedbacksRecieved: true, hospitals: true },
   });
 
   const fuse = new Fuse(data, options);
 
-  let searchParams = [];
+  const specializationList = JSON.parse(specialization);
 
-  if (name) {
-    searchParams.push({
-      name: name,
-    });
-  }
-
-  if (specialization) {
-    searchParams.push({
-      specialization: specialization,
-    });
-  }
-
-  if (searchParams.length === 0) {
+  if (name == "null") {
     res.status(200).json({
       status: "success",
       data: data,
     });
   } else {
-    const searchResult = fuse.search({
-      $and: searchParams,
-    });
+    const searchResult = fuse.search(name);
 
     const filteredResult = searchResult.map((item) => {
       return item.item;
     });
 
-    res.status(200).json({
-      status: "success",
-      data: filteredResult,
-    });
+    if (specializationList.length > 0) {
+      const filteredSpecialization = filteredResult.filter((item) => {
+        return specializationList.includes(item.specialization);
+      });
+
+      res.status(200).json({
+        status: "success",
+        data: filteredSpecialization,
+      });
+    }else{
+      res.status(200).json({
+        status: "success",
+        data: filteredResult,
+      });
+    }
   }
 });

@@ -13,8 +13,7 @@ const Doctors = () => {
     const [doctors, setDoctors] = useState<{}[]>([]);
     
     const onSearch = (payload: any) => {
-        const result = Helper.getDoctors(payload);
-        setDoctors(result);
+        Helper.getDoctors(payload.searchText, null, payload.specialities).then((result: any) => setDoctors(result));
     }
 
     const goToDoctor = (doctor: any) => {
@@ -22,13 +21,13 @@ const Doctors = () => {
     }
 
     useEffect(() => {
-        const result = Helper.getDoctors(null);
-        setDoctors(result);
-    }, [])
+        Helper.getDoctors(null, null, null).then((result: any) => setDoctors(result));
+    }, []);
+
     return (
         <Box display={'flex'} flexDirection={'column'} gap={4}>
-            { user.role === 'Patient' && <Search onSearch={onSearch} /> }
-            { user.role === 'Insurer' && <Typography variant="h5" fontWeight={600} color={'primary'}>Doctors</Typography> }
+            { user.role === 'patient' && <Search onSearch={onSearch} /> }
+            { user.role === 'insurer' && <Typography variant="h5" fontWeight={600} color={'primary'}>Doctors</Typography> }
             <Box display={'flex'} flexDirection={'column'} gap={3}>
                 {
                     doctors.map((doctor: any, index: any) => (

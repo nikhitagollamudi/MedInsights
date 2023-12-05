@@ -26,15 +26,15 @@ const Appointment = ({ appointment, onCancel, onMarkComplete }: AppointmentProps
             </Box>
             <CardContent>
                 <Box>
-                    <Typography variant="body1">{user.role === 'Patient' ? appointment?.doctor?.name : appointment?.patient?.name}</Typography>
-                    {user.role === 'Patient' && <Typography variant="body2" fontStyle={'italic'}>At - {appointment?.doctor?.hospital?.name}</Typography>}
+                    <Typography variant="body1">{user.role === 'patient' ? appointment?.doctor?.name : appointment?.patient?.name}</Typography>
+                    {user.role === 'patient' && <Typography variant="body2" fontStyle={'italic'}>At - {appointment?.doctor?.hospital?.name}</Typography>}
                 </Box>
                 <Typography variant="body1" my={1} color={'primary'} fontWeight={'bold'}>{getTimeToAppointment(appointment.startTime)}</Typography>
             </CardContent>
             <CardActions sx={{ marginLeft: 'auto' }}>
                 <Box display={'flex'} alignItems={'center'}>
                     { onCancel && !appointment.isComplete && <Button color="primary" onClick={() => onCancel(appointment)}>Cancel</Button> }
-                    { user.role === 'Doctor' && onMarkComplete && <Button color="primary" onClick={() => onMarkComplete(appointment)}>{ appointment.isComplete ? 'Completed' : 'Mark as complete' }</Button> }
+                    { user.role === 'doctor' && onMarkComplete && <Button color="primary" onClick={() => onMarkComplete(appointment)}>{ appointment.isComplete ? 'Completed' : 'Mark as complete' }</Button> }
                 </Box>
             </CardActions>
         </Card>

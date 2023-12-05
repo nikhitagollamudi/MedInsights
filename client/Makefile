@@ -4,6 +4,9 @@ deploy:
 render-build:
 	npm run build
 
+start:
+	npm run start
+
 build: install
 	npm run build
 

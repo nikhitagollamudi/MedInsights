@@ -6,7 +6,7 @@ const authController = require("../controllers/authController");
 const router = express.Router();
 
 // protect all routes after this
-router.use(authController.protect); // verifies JWT and sets user
+// router.use(authController.protect); // verifies JWT and sets user
 
 router.get(
   "/",
@@ -16,12 +16,11 @@ router.get(
 );
 router.get(
   "/prisma",
-  authController.restrictTo("patient", "admin"),
   doctorController.getAllDoctors
 );
 router.get(
   "/specs",
-  authController.restrictTo("patient", "admin"),
+  // authController.restrictTo("patient", "admin"),
   doctorController.getAllSpecs
 );
 router.get("/me", userController.getMe, doctorController.getDoctor);

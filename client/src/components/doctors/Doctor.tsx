@@ -11,14 +11,15 @@ const Doctor = ({ doctor, onClick }: { doctor: any, onClick:(doctor: any) => voi
                 <CardContent>
                     <Box display={'flex'} alignItems={'center'}>
                         <Typography variant="body1" mr={1}>{doctor.name}</Typography>
-                        <Stack direction={'row'} gap={1}>
-                            {
-                                doctor.specializations.map((specialization: any) => <Chip color="primary" variant="outlined" key={specialization} size="small" label={specialization} />)
-                            }
-                        </Stack>
+                        <Chip color="primary" variant="outlined" key={doctor.specialization} size="small" label={doctor.specialization} />
                     </Box>
-                    <Typography variant="body2" my={1} fontWeight={600}>{doctor.hospital.name}</Typography>
-                    <Link variant="body2">{doctor.feedbacks.length} Reviews</Link>
+                    <Typography variant="body2" my={1} fontWeight={600}>{doctor?.hospitals?.name}</Typography>
+                    <Link variant="body2" onClick={
+                        (e: any) => {
+                            e.preventDefault();
+                            console.log("Review feedback for:", doctor);
+                        }
+                    }>{doctor.feedbacksRecieved.length} Reviews</Link>
                 </CardContent>
             </CardActionArea>
         </Card>

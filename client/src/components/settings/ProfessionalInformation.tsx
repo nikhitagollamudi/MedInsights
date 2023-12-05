@@ -1,4 +1,4 @@
-import { Box, Typography, TextField, Switch, FormControl, Select, MenuItem, InputLabel, SelectChangeEvent } from "@mui/material"
+import { Box, Typography, TextField, Switch, FormControl, Select, MenuItem, InputLabel, SelectChangeEvent, Button, Snackbar } from "@mui/material"
 import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../../contexts/AuthContext";
 import { Helper } from "../../services/helper";
@@ -13,6 +13,30 @@ const ProfessionalInformation = () => {
         treatsCovid: user?.professionalInformation?.specialization
     });
     const [selectedDays, setSelectedDays] = useState<{}[]>(days);
+
+    const [submitted, setSubmitted] = useState(false);
+    const [submittedFailed, setSubmittedFailed] = useState(false);
+
+    const onSubmit = () => {
+        Helper.updateUser(userProfessionalForm).then((res) => {
+            setSubmitted(true);
+            auth?.dispatch({
+                type: 'LOGIN',
+                payload: {
+                    user: res
+                }
+            });
+            localStorage.setItem('user', JSON.stringify(res));
+            setSubmittedFailed(false);
+        }).catch((err) => {
+            console.log("Error:", err);
+            setSubmittedFailed(true);
+        });
+    }
+
+    const handleCloseSnackbar = () => {
+        setSubmitted(false);
+    }
 
     useEffect(() => {
         setUserProfessionalForm(user?.professionalInformation);
@@ -109,6 +133,32 @@ const ProfessionalInformation = () => {
                             }
                         </Box>
                     ))
+                }
+            </Box>
+            <Box flex={1} flexDirection={'row'} alignItems={'center'} mb={4}>
+                <FormControl sx={{ minWidth: 350, paddingTop: 2.5 }}>
+                    <Button variant="contained" color="primary" onClick={onSubmit}>
+                        Submit
+                    </Button>
+                </FormControl>
+            </Box>
+            <Box>
+                {
+                    submittedFailed ?
+                        <Snackbar
+                            open={submitted}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message={"Failed"}
+                            sx={{ backgroundColor: 'red' }}
+                        />
+                        : <Snackbar
+                            open={submitted}
+                            autoHideDuration={3000}
+                            onClose={handleCloseSnackbar}
+                            message={ "Submitted"}
+                            sx={{ backgroundColor: 'green' }}
+                        />
                 }
             </Box>
         </Box>

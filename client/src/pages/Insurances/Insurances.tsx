@@ -37,7 +37,7 @@ const Insurances = () => {
     return (
         <Box>
             {
-                user.role === 'Patient' && userPlan && (
+                user.role === 'patient' && userPlan && (
                     <Box p={2} border={1} borderRadius={4} borderColor={primary.main} mb={3}>
                         <Typography variant="h6" color={'primary'} fontWeight={600}>My Plan</Typography>
                         <Box display={'flex'} alignItems={'center'} justifyContent={'space-between'} mt={1}>

@@ -1,5 +1,5 @@
 import { Box, TextField, FormControl, InputLabel, Select, OutlinedInput, MenuItem, Checkbox, ListItemText, SelectChangeEvent, Chip, Typography, Button } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Helper } from "../../services/helper";
 import { SearchOutlined } from "@mui/icons-material";
 
@@ -15,11 +15,15 @@ const MenuProps = {
 };
 
 const Search = ({ onSearch }: { onSearch: Function }) => {
-    const specialities = Helper.getAllSpecialities();
     const conditions = Helper.getAllConditions();
     const [searchText, setSearchText] = useState('');
     const [selectedSpecialities, setSelectedSpecialities] = useState<string[]>([]);
     const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
+    const [specialitiesList, setSpecialitiesList] = useState<string[]>([]);
+    
+    useEffect(() => {
+        Helper.getAllSpecialities().then((specialities: any) => setSpecialitiesList(specialities));
+    }, []);
 
   const handleChange = (e: SelectChangeEvent<typeof selectedSpecialities>) => {
     const {
@@ -73,10 +77,10 @@ const Search = ({ onSearch }: { onSearch: Function }) => {
                             )}
                             MenuProps={MenuProps}
                         >
-                            {specialities.map((speciality: any) => (
-                                <MenuItem key={speciality.id} value={speciality.label}>
-                                    <Checkbox checked={selectedSpecialities.indexOf(speciality.label) > -1} />
-                                    <ListItemText primary={speciality.label} />
+                            {specialitiesList.map((speciality: any) => (
+                                <MenuItem key={speciality} value={speciality}>
+                                    <Checkbox checked={selectedSpecialities.indexOf(speciality) > -1} />
+                                    <ListItemText primary={speciality} />
                                 </MenuItem>
                             ))}
                         </Select>

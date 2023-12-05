@@ -1,13 +1,10 @@
-import axios from 'axios';
 import { Helper } from './helper';
 
-// const API_URL = '';
-
-const register = (payload:any) => {
-    return new Promise<any>((resolve, reject) => {
-        const userData = Helper.getUserByEmail(payload.email);
+const register = (payload: any) => {
+    return new Promise<any>(async (resolve, reject) => {
+        const userData = await Helper.userRegister(payload);
         const data = {
-            qrCode: require('../assets/qrcode.png'),
+            qrCode: userData.qrCode,
             data: {
                 user: userData
             }
@@ -18,16 +15,21 @@ const register = (payload:any) => {
     })
 }
 
-const login = (payload:any) => {
-    return new Promise<any>((resolve, reject) => {
-        const userData = Helper.getUserByEmail(payload.email);
-        const data = {
-            token: 'xyz',
-            user: userData
+const login = (payload: any) => {
+    return new Promise<any>(async (resolve, reject) => {
+        const userData = await Helper.userLogin(payload);
+
+        if (!userData) {
+            reject();
+        } else {
+            const data = {
+                token: userData.token,
+                user: userData.user
+            }
+            setTimeout(() => {
+                resolve(data);
+            }, 800);
         }
-        setTimeout(() => {
-            resolve(data);
-        }, 800);
     })
 }
 

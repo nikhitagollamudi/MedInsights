@@ -91,6 +91,9 @@ exports.getAllSpecs = catchAsync(async (req, res, next) => {
   const allDoctors = await table.findMany({});
   const spec = {};
   for (const { specialization } of allDoctors) {
+    if (!specialization) {
+      continue;
+    }
     spec[specialization.toLowerCase().trim()] = true;
   }
 

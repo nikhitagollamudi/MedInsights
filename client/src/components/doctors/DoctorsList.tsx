@@ -6,7 +6,9 @@ const DoctorsList = ({ doctors }: { doctors: any }) => {
         <Box display={'flex'} flexDirection={'column'} gap={3}>
             {
                 doctors.map((doctor: any, index: any) => (
-                    <Doctor key={index} doctor={doctor} />
+                    <Doctor key={index} doctor={doctor} onClick={() => {
+                        console.log("Clicked on doctor:", doctor);
+                    }}/>
                 ))
             }
         </Box>

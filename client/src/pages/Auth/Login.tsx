@@ -2,7 +2,6 @@ import { useContext, useState } from "react";
 import { Box, Button, Typography, Link, TextField, IconButton } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 import { Visibility, VisibilityOff } from "@mui/icons-material"
-import { AuthService } from "../../services/authService";
 import { useNavigate, useLocation } from "react-router";
 import AuthContext from "../../contexts/AuthContext";
 
@@ -13,27 +12,24 @@ const Login = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
-    const [loginForm, setLoginForm] = useState({
-        email: '',
-        password: ''
-    });
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
+    const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
+    };
 
     const handleLogin = async () => {
-        const user = await AuthService.login(loginForm);
-        if (user) {
-            auth?.dispatch({
-                type: 'LOGIN',
-                payload: user
-            });
-            localStorage.setItem('user', JSON.stringify(user));
-            navigate('/auth/2fa', { state: { from: location.pathname }});
+        const user = {
+            email: email,
+            password: password
         }
-    }
-
-    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        let newValues = { ...loginForm, [name]: value };
-        setLoginForm(newValues);
+        localStorage.setItem('userLoginInfo', JSON.stringify(user));
+        navigate('/auth/2fa', { state: { from: location.pathname }});
     }
 
     return (
@@ -53,8 +49,8 @@ const Login = () => {
                         marginBottom: '1rem'
                     }}
                     required
-                    value={loginForm.email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleValueChange(e)}
+                    value={email}
+                    onChange={handleEmail}
                 />
                 <TextField 
                     id="password" 
@@ -76,8 +72,8 @@ const Login = () => {
                                 </IconButton>
                             </InputAdornment>
                     }}
-                    value={loginForm.password}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleValueChange(e)}
+                    value={password}
+                    onChange={handlePassword}
                 />
                 <Button 
                     variant="contained" 

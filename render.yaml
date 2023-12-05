@@ -40,20 +40,13 @@ services:
         value: sameorigin
     autoDeploy: true
     envVars:
-      - key: WEB_HOST
+      - key: REACT_APP_API_URL
         fromService:
           name: api
           type: web
           envVarKey: RENDER_EXTERNAL_URL
 
 databases:
-  - name: prod-db
-    region: ohio
-    plan: free
-    databaseName: medinsights
-    user: app_user
-    ipAllowList: [] # only allow internal connections
-    postgresMajorVersion: 15
   - name: dev-db # Allows all connections
     region: ohio
     plan: free

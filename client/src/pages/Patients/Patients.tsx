@@ -15,7 +15,7 @@ const Patients = () => {
     }, [])
     return (
         <Box>
-            <Typography variant="h5" fontWeight={'semibold'} color="primary">{ user.role === 'Doctor' ? 'Patients' : 'Members' }</Typography>
+            <Typography variant="h5" fontWeight={'semibold'} color="primary">{ user.role === 'doctor' ? 'Patients' : 'Members' }</Typography>
             <Box display={'flex'} flexDirection={'column'} gap={3} mt={3}>
                 {
                     patients.length && patients.map((patient: any) => (

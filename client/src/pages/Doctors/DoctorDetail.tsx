@@ -35,9 +35,9 @@ const DoctorDetail = () => {
     }, [doctorId])
     return (
         <Box height={'100%'}>
-            {user.role === 'Patient' && <Typography variant="h6" mb={5}>Book an appointment</Typography>}
+            {user.role === 'patient' && <Typography variant="h6" mb={5}>Book an appointment</Typography>}
             <Box height={'100%'} component={'div'} display={'flex'}>
-                <Box px={2} component={'div'} flex={user.role === 'Patient' ? 0.5 : 1} borderRight={user.role === 'Patient' ? 1 : 0} borderColor={primary.main}>
+                <Box px={2} component={'div'} flex={user.role === 'patient' ? 0.5 : 1} borderRight={user.role === 'patient' ? 1 : 0} borderColor={primary.main}>
                     <Box component={'div'} display={'flex'} alignItems={'center'}>
                         <Box display={'flex'} alignItems={'center'} justifyContent={'center'} bgcolor={'#efefef'} p={3} borderRadius={'50%'} mr={5}>
                             <LocalHospitalIcon fontSize="large" color={'primary'}></LocalHospitalIcon>
@@ -64,7 +64,7 @@ const DoctorDetail = () => {
                     }
                 </Box>
                 {
-                    user.role === 'Patient' && (
+                    user.role === 'patient' && (
                         <Box component={'div'} flex={0.5}>
                             <Box px={3} component={'div'}>
                                 <Typography variant="body1" fontWeight={600}>Appointment Details</Typography>

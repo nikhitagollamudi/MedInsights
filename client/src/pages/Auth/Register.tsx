@@ -12,25 +12,51 @@ const Register = () => {
     const location = useLocation();
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+    const [password, setPassword] = useState('');
+    const [passwordConfirm, setPasswordConfirm] = useState('');
     const [role, setRole] = useState('');
+    const [fullName, setName] = useState('');
+    const [email, setEmail] = useState('');
+
     const handleClickShowPassword = (isConfirm: Boolean) => isConfirm ? setShowPasswordConfirm((show) => !show) : setShowPassword((show) => !show);
 
     const handleRole = (event: SelectChangeEvent) => {
         setRole(event.target.value as string);
     };
 
+    const handleName = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+    };
+    
+    const handleEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value);
+    };
+
+    const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPassword(event.target.value);
+    };
+
+    const handlePasswordConfirm = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setPasswordConfirm(event.target.value);
+    };
+
     const handleRegister = async () => {
         const user = await AuthService.register({
-            name: 'John Doe',
-            email: 'abc@example.com',
-            role: 'Patient'
+            email: email,
+            password : password,
+            passwordConfirm: passwordConfirm,
+            name: fullName,
+            role: role,
         });
         if (user) {
             auth?.dispatch({
                 type: 'REGISTER',
                 payload: user
             });
-            localStorage.setItem('user', JSON.stringify(user));
+            localStorage.setItem('userLoginInfo', JSON.stringify({
+                email: email,
+                password: password
+            }));
             navigate('/auth/2fa', { state: { from: location.pathname }});
         }
     }
@@ -45,7 +71,8 @@ const Register = () => {
                 <TextField 
                     id="name" 
                     label="Full Name" 
-                    variant="outlined" 
+                    variant="outlined"
+                    onChange={handleName}
                     fullWidth
                     sx={{
                         marginBottom: '1rem'
@@ -55,6 +82,7 @@ const Register = () => {
                     id="email" 
                     label="Email" 
                     variant="outlined" 
+                    onChange={handleEmail}
                     fullWidth
                     sx={{
                         marginBottom: '1rem'
@@ -63,6 +91,7 @@ const Register = () => {
                 <TextField 
                     id="password" 
                     label="Password" 
+                    onChange={handlePassword}
                     variant="outlined" 
                     fullWidth
                     InputProps={{
@@ -85,6 +114,7 @@ const Register = () => {
                     id="passwordConfirm" 
                     label="Confirm Password" 
                     variant="outlined" 
+                    onChange={handlePasswordConfirm}
                     fullWidth
                     InputProps={{
                         endAdornment: 
