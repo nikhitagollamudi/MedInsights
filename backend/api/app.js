@@ -53,10 +53,10 @@ app.use(
 
 // CORS
 app.use(
-    cors({
-        origin: true,
-        credentials: true
-    })
+  cors({
+    origin: true,
+    credentials: true,
+  })
 );
 
 // Development logging
