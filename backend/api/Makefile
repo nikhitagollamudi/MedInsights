@@ -10,6 +10,9 @@ run: build
 		-e PORT=$(PORT) \
 		-it $(docker-container-name)
 
+local: install
+	PORT=$(PORT) npm run start
+
 build: clean
 	docker build -t $(docker-container-name) .
 
