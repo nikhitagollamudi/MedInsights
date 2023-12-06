@@ -7,7 +7,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const cookieParser = require("cookie-parser");
 const compression = require("compression");
-const cors = require('cors');
+const cors = require("cors");
 
 const userRouter = require("./routes/userRoutes");
 const patientRouter = require("./routes/patientRoutes");
@@ -52,12 +52,12 @@ app.use(
 );
 
 // CORS
-/*app.use(
+app.use(
     cors({
         origin: true,
         credentials: true
     })
-);*/
+);
 
 // Development logging
 if (process.env.NODE_ENV === "development") {
