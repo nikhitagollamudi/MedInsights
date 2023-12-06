@@ -10,6 +10,12 @@ const compression = require("compression");
 const cors = require('cors');
 
 const userRouter = require("./routes/userRoutes");
+const patientRouter = require("./routes/patientRoutes");
+const doctorRouter = require("./routes/doctorRoutes");
+const feedbackRouter = require("./routes/feedbackRoutes");
+const slotRouter = require("./routes/slotRoutes");
+const planRouter = require("./routes/planRoutes");
+const searchRouter = require("./routes/searchRoutes");
 
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
